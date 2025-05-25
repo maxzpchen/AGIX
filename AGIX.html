@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGIX Holdings Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 40px; /* Ensure space for content at the bottom */
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px; /* Added horizontal padding */
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px); /* Safari support */
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            background-size: 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient 5s ease-in-out infinite;
+        }
+        
+        @keyframes gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .header p strong {
+            color: #4ecdc4;
+        }
+        
+        .portfolio-overview {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px); /* Safari support */
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .portfolio-overview h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #4ecdc4; /* Consistent title color */
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .overview-stat {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05); /* Slightly less opacity for inner elements */
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #4ecdc4;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .holdings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); /* Adjusted minmax for better fit */
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .holding-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px); /* Safari support */
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .holding-card::before { /* Shimmer effect */
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s ease; /* Slower shimmer */
+        }
+        
+        .holding-card:hover::before {
+            left: 100%;
+        }
+        
+        .holding-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+        
+        .company-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .company-info {
+            flex: 1;
+        }
+        
+        .company-name {
+            font-size: 1.4rem; /* Slightly larger for emphasis */
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        
+        .company-ticker {
+            font-size: 0.9rem;
+            color: #4ecdc4; /* Consistent highlight color */
+            font-weight: 600;
+        }
+        
+        .weight-info {
+            text-align: right;
+        }
+        
+        .weight {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            display: inline-block;
+            color: white; /* Ensure text is visible */
+        }
+        
+        .market-value {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .rank-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(45deg, #45b7d1, #764ba2);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .one-liner {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: #e8f4fd; /* Lighter for readability */
+            font-style: italic;
+            line-height: 1.5;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #4ecdc4; /* Consistent highlight color */
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before { /* Icon for section */
+            content: '▶'; /* Simpler icon */
+            margin-right: 8px;
+            color: #ff6b6b; /* Contrasting color */
+            font-size: 0.8em;
+        }
+        
+        .financial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .metric {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .metric-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #4ecdc4; /* Consistent highlight color */
+        }
+        
+        .metric-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+        
+        .ai-features {
+            list-style: none;
+            padding-left: 0; /* Remove default padding */
+        }
+        
+        .ai-features li {
+            padding: 8px 0;
+            padding-left: 25px; /* Space for icon */
+            position: relative;
+            font-size: 0.95rem;
+        }
+        
+        .ai-features li::before { /* Robot icon for AI features */
+            content: '🤖';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+        }
+        
+        .monte-carlo {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(78, 205, 196, 0.1)); /* Softer gradient */
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        
+        .price-range {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            gap: 10px; /* Added gap */
+        }
+        
+        .price-target {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            flex: 1;
+            margin: 0; /* Removed margin, using gap now */
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .price-target div:first-child {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-bottom: 3px;
+        }
+        .price-target strong {
+            font-size: 1.1rem;
+        }
+        
+        .chart-container {
+            height: 180px; /* Slightly reduced height */
+            margin-top: 15px;
+            position: relative; /* For Chart.js responsiveness */
+        }
+        
+        .bull-case { color: #4CAF50; } /* Green for bull */
+        .bear-case { color: #F44336; } /* Red for bear */
+        .base-case-text { color: #FFC107; } /* Yellow for base text, distinct from chart */
+        .current-price-text { color: #2196F3; } /* Blue for current price text */
+
+
+        .growth-highlight {
+            background: rgba(78, 205, 196, 0.1); /* Teal highlight, softer */
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #4ecdc4; /* Teal border */
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .growth-highlight strong {
+            color: #4ecdc4;
+        }
+
+        .footer-disclaimer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.7);
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            .holdings-grid {
+                grid-template-columns: 1fr; /* Single column on smaller screens */
+            }
+            .financial-grid {
+                grid-template-columns: repeat(2, 1fr); /* Two columns for financials */
+            }
+            .filter-controls {
+                justify-content: center; /* Center filter buttons */
+            }
+            .company-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .weight-info {
+                text-align: left;
+                margin-top: 10px;
+            }
+            .rank-badge {
+                top: 10px;
+                right: 10px;
+                width: 30px;
+                height: 30px;
+                font-size: 0.8rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            .filter-btn {
+                padding: 10px 18px;
+                font-size: 0.9rem;
+            }
+            .company-name {
+                font-size: 1.2rem;
+            }
+            .one-liner {
+                font-size: 1rem;
+            }
+            .section-title {
+                font-size: 1.1rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AGIX Holdings Dashboard</h1>
+            <p>KraneShares Artificial Intelligence & Technology ETF - Complete Holdings Analysis</p>
+            <p><strong>As of May 23, 2025</strong></p>
+        </div>
+        
+        <div class="portfolio-overview">
+            <h2>Portfolio Overview</h2>
+            <div class="overview-grid">
+                <div class="overview-stat">
+                    <div class="stat-value" id="totalHoldings">--</div>
+                    <div class="stat-label">Total Holdings</div>
+                </div>
+                <div class="overview-stat">
+                    <div class="stat-value" id="totalAssets">$--M</div>
+                    <div class="stat-label">Total Net Assets</div>
+                </div>
+                <div class="overview-stat">
+                    <div class="stat-value" id="topHoldingWeight">--%</div>
+                    <div class="stat-label">Top Holding Weight</div>
+                </div>
+                <div class="overview-stat">
+                    <div class="stat-value" id="top10Concentration">--%</div>
+                    <div class="stat-label">Top 10 Concentration</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="filter-controls">
+            <button class="filter-btn active" onclick="filterHoldings(event, 'all')">All Holdings</button>
+            <button class="filter-btn" onclick="filterHoldings(event, 'top10')">Top 10</button>
+            <button class="filter-btn" onclick="filterHoldings(event, 'ai-pure')">AI Leaders</button>
+        </div>
+        
+        <div class="holdings-grid" id="holdingsContainer">
+            </div>
+
+        <div class="footer-disclaimer">
+            <p><strong>Disclaimer:</strong> The information provided on this dashboard is for illustrative and informational purposes only, based on publicly available data and the AGIX holdings CSV file dated May 23, 2025. Financial figures, AI progress, and price targets are illustrative and may not reflect real-time data. This is not financial advice. Stock market investments are subject to risk, and past performance is not indicative of future results. Always conduct your own research or consult with a qualified financial advisor before making investment decisions. Holdings are subject to change by the ETF.</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script>
+        // Comprehensive holdings data with revised Monte Carlo values
+        const allHoldings = [
+            {
+                rank: 1, name: "META PLATFORMS INC", ticker: "META", weight: "7.29%", marketValue: "$1,771,445", category: "ai-pure",
+                oneLiner: "The metaverse and social AI pioneer building the future of human connection through advanced AI recommendation systems and virtual reality.",
+                financials: { revenue: "$142.7B", growth: "+18%", netIncome: "$42.5B" },
+                growthHighlight: "Reality Labs investing $20B+ annually in AI & Metaverse. Meta AI assistant rollout driving significant engagement.",
+                aiProgress: ["Llama 3 open-source models", "Meta AI assistant integrated widely", "Advanced ad targeting AI", "Emu Video & Image generation", "Quest 3 VR/MR advancements"],
+                monteCarlo: { current: 470, bear: 420, base: 500, bull: 580 } 
+            },
+            {
+                rank: 2, name: "MICROSOFT CORP", ticker: "MSFT", weight: "5.24%", marketValue: "$1,274,009", category: "cloud",
+                oneLiner: "The AI-first cloud computing giant transforming productivity through Copilot and Azure AI services.",
+                financials: { revenue: "$236.6B", growth: "+15%", netIncome: "$86.1B" },
+                growthHighlight: "Azure AI services contributing 7 percentage points to Azure's growth. Copilot adoption rapidly expanding across enterprises.",
+                aiProgress: ["Azure OpenAI Service (GPT-4)", "Microsoft 365 Copilot suite", "GitHub Copilot for developers", "Custom Maia AI accelerators", "Phi-3 small language models"],
+                monteCarlo: { current: 425, bear: 390, base: 450, bull: 510 }
+            },
+            {
+                rank: 3, name: "AMAZON.COM INC", ticker: "AMZN", weight: "5.07%", marketValue: "$1,232,672", category: "cloud",
+                oneLiner: "The cloud infrastructure and e-commerce leader leveraging AI for logistics optimization and AWS machine learning services.",
+                financials: { revenue: "$590.7B", growth: "+12%", netIncome: "$37.7B" },
+                growthHighlight: "AWS AI services (Bedrock, SageMaker) on a $10B+ run rate. Amazon Q and Rufus AI enhancing enterprise and consumer experiences.",
+                aiProgress: ["Amazon Bedrock & Titan FMs", "Amazon SageMaker platform", "Amazon Q (Business AI)", "Alexa LLM integration", "AI in robotics & logistics"],
+                monteCarlo: { current: 185, bear: 170, base: 200, bull: 230 }
+            },
+            {
+                rank: 4, name: "NVIDIA CORP", ticker: "NVDA", weight: "4.12%", marketValue: "$1,001,874", category: "semiconductor",
+                oneLiner: "The foundational AI chip architect powering the next generation of artificial intelligence and accelerated computing.",
+                financials: { revenue: "$79.8B", growth: "+150%", netIncome: "$42.1B" },
+                growthHighlight: "Data Center revenue quadrupled YoY driven by Hopper and Blackwell demand. AI Enterprise software suite gaining traction.",
+                aiProgress: ["Blackwell GPU architecture", "H100/H200 Tensor Core GPUs", "NVIDIA NIM microservices", "CUDA & Omniverse platforms", "DGX AI supercomputers"],
+                monteCarlo: { current: 1050, bear: 900, base: 1150, bull: 1400 }
+            },
+            {
+                rank: 5, name: "ANTHROPIC, PBC", ticker: "Private", ALIAS: "ANTHROPIC", weight: "4.11%", marketValue: "$999,966", category: "ai-pure",
+                oneLiner: "The AI safety-focused company behind Claude, building helpful, harmless, and honest AI systems for enterprise applications.",
+                financials: { revenue: "$1.2B (Est. Run Rate)", growth: "Rapid", netIncome: "N/A (Private)" },
+                growthHighlight: "Claude 3 model family achieving state-of-the-art benchmarks. Strong enterprise adoption via AWS and Google Cloud partnerships.",
+                aiProgress: ["Claude 3 (Opus, Sonnet, Haiku)", "Constitutional AI for safety", "Enterprise API & partnerships", "Focus on reliable & steerable AI", "Large context window capabilities"],
+                monteCarlo: { current: 60, bear: 50, base: 70, bull: 90 } // Illustrative for private co.
+            },
+            {
+                rank: 6, name: "APPLE INC", ticker: "AAPL", weight: "3.25%", marketValue: "$790,648", category: "consumer-tech",
+                oneLiner: "The consumer technology giant integrating 'Apple Intelligence' across its ecosystem for enhanced on-device AI experiences.",
+                financials: { revenue: "$385.1B", growth: "+1%", netIncome: "$99.8B" },
+                growthHighlight: "WWDC announcements for 'Apple Intelligence' expected to drive new hardware cycle and service engagement. Focus on private on-device AI.",
+                aiProgress: ["Apple Intelligence (iOS, macOS)", "Enhanced Siri with LLMs", "Neural Engine in M-series/A-series chips", "Core ML & Create ML for developers", "Privacy-preserving AI features"],
+                monteCarlo: { current: 190, bear: 170, base: 205, bull: 230 }
+            },
+            {
+                rank: 7, name: "ALPHABET INC-CL A", ticker: "GOOGL", weight: "3.23%", marketValue: "$784,902", category: "ai-pure",
+                oneLiner: "The search and cloud AI pioneer leveraging vast data advantages to power Gemini, AI Overviews, and enterprise AI solutions via Google Cloud.",
+                financials: { revenue: "$318.1B", growth: "+12%", netIncome: "$82.4B" },
+                growthHighlight: "Google Cloud AI services (Vertex AI, Gemini) accelerating growth. AI Overviews in Search enhancing user experience.",
+                aiProgress: ["Gemini AI models (Ultra, Pro, Flash)", "Vertex AI Platform on GCP", "AI Overviews in Google Search", "Google Assistant with Gemini", "TPU AI accelerators"],
+                monteCarlo: { current: 175, bear: 160, base: 190, bull: 220 }
+            },
+            {
+                rank: 8, name: "TESLA INC", ticker: "TSLA", weight: "3.15%", marketValue: "$766,569", category: "ai-pure",
+                oneLiner: "The autonomous driving pioneer revolutionizing transportation through Full Self-Driving (FSD) AI and robotics (Optimus).",
+                financials: { revenue: "$101.3B", growth: "+10%", netIncome: "$13.2B" },
+                growthHighlight: "FSD v12 (end-to-end AI) rollout expanding. Dojo supercomputer scaling for AI training. Optimus robot development progressing.",
+                aiProgress: ["Full Self-Driving (FSD) v12", "Dojo AI training supercomputer", "Optimus humanoid robot", "Autopilot fleet learning", "AI in manufacturing (Giga factories)"],
+                monteCarlo: { current: 180, bear: 150, base: 200, bull: 250 }
+            },
+            {
+                rank: 9, name: "SALESFORCE INC", ticker: "CRM", weight: "3.01%", marketValue: "$731,442", category: "cloud",
+                oneLiner: "The CRM leader transforming customer relationships through Einstein AI, Data Cloud, and generative AI copilots.",
+                financials: { revenue: "$38.2B", growth: "+10%", netIncome: "$5.9B" },
+                growthHighlight: "Einstein 1 Platform adoption growing. AI Cloud and Copilot features driving customer productivity and upsell opportunities.",
+                aiProgress: ["Einstein AI & Einstein 1 Platform", "Einstein Copilot & Copilot Studio", "Data Cloud for unified data AI", "Einstein Trust Layer for secure AI", "Industry-specific AI solutions"],
+                monteCarlo: { current: 270, bear: 240, base: 290, bull: 330 }
+            },
+            {
+                rank: 10, name: "SERVICENOW INC", ticker: "NOW", weight: "2.97%", marketValue: "$722,142", category: "cloud",
+                oneLiner: "The AI context layer for future agentic enterprise workflow, transforming IT and enterprise service management with intelligent automation.",
+                financials: { revenue: "$9.9B", growth: "+22%", netIncome: "$1.8B" },
+                growthHighlight: "Now Assist generative AI products driving significant ARR growth. Strong uptake of Pro Plus SKUs with embedded AI.",
+                aiProgress: ["Now Assist across workflows", "Generative AI for code & content", "AI-powered process mining", "Proactive issue resolution with AI", "Domain-specific LLMs for enterprise"],
+                monteCarlo: { current: 750, bear: 680, base: 800, bull: 900 }
+            },
+            {
+                rank: 11, name: "NEBIUS GROUP NV", ticker: "NBIS", weight: "2.70%", marketValue: "$656,918", category: "cloud",
+                oneLiner: "Emerging markets AI cloud infrastructure provider, enabling scalable machine learning and data processing solutions.",
+                financials: { revenue: "$1.5B (Est.)", growth: "+50% (Est.)", netIncome: "$120M (Est.)" },
+                growthHighlight: "Rapid expansion of AI cloud services in Europe and APAC. Strong demand for GPU instances and ML platforms.",
+                aiProgress: ["Scalable Cloud ML infrastructure", "Managed AI model training services", "Big Data analytics platforms", "Edge AI computing solutions", "Focus on regional data sovereignty"],
+                monteCarlo: { current: 40, bear: 35, base: 45, bull: 55 }
+            },
+            {
+                rank: 12, name: "PALANTIR TECHN-A", ticker: "PLTR", weight: "2.55%", marketValue: "$620,126", category: "ai-pure",
+                oneLiner: "The operational AI platform enabling organizations to transform complex data into actionable intelligence and decision-making with AIP.",
+                financials: { revenue: "$2.5B", growth: "+20%", netIncome: "$350M" },
+                growthHighlight: "Artificial Intelligence Platform (AIP) adoption accelerating commercial revenue. Expanding customer base through AIP Bootcamps.",
+                aiProgress: ["Artificial Intelligence Platform (AIP)", "Foundry & Gotham platforms with AI", "LLM integration and orchestration", "Edge AI for defense & industrial", "Focus on operational AI outcomes"],
+                monteCarlo: { current: 25, bear: 20, base: 28, bull: 35 }
+            },
+            {
+                rank: 13, name: "DUOLINGO INC", ticker: "DUOL", weight: "2.53%", marketValue: "$615,929", category: "edtech",
+                oneLiner: "The AI-powered language learning platform making education accessible and engaging through gamification and personalized lessons.",
+                financials: { revenue: "$620M", growth: "+45%", netIncome: "$40M" },
+                growthHighlight: "Duolingo Max with advanced AI features driving subscription growth. AI enhancing personalization and new subject expansion (Math, Music).",
+                aiProgress: ["BirdBrain AI personalization engine", "Duolingo Max (GPT-4 powered features)", "AI for lesson & exercise generation", "AI-driven speech recognition", "Expansion to new learning verticals"],
+                monteCarlo: { current: 210, bear: 180, base: 230, bull: 270 }
+            },
+            {
+                rank: 14, name: "BROADCOM INC", ticker: "AVGO", weight: "2.49%", marketValue: "$606,337", category: "semiconductor",
+                oneLiner: "A semiconductor and infrastructure software leader, crucial for AI data centers with its networking chips and custom AI accelerators.",
+                financials: { revenue: "$42.6B", growth: "+12% (incl. VMware)", netIncome: "$12.1B" },
+                growthHighlight: "AI semiconductor solutions (networking, custom ASICs) projected to exceed $10B. Strong demand from hyperscalers for AI clusters.",
+                aiProgress: ["Custom AI accelerators (ASICs)", "Tomahawk/Jericho Ethernet switches for AI", "PCIe switches & retimers for AI servers", "VMware for AI workload management", "Fibre Channel SAN for AI storage"],
+                monteCarlo: { current: 1350, bear: 1200, base: 1450, bull: 1650 }
+            },
+            {
+                rank: 15, name: "SAP SE", ticker: "SAP", weight: "2.42%", marketValue: "$588,505", category: "enterprise-software",
+                oneLiner: "Global enterprise software leader embedding 'Business AI' and Joule copilot across its cloud ERP and business applications.",
+                financials: { revenue: "$36.5B", growth: "+7%", netIncome: "$6.2B" },
+                growthHighlight: "Cloud revenue up 25%, driven by S/4HANA and BTP. Joule AI copilot adoption enhancing customer value.",
+                aiProgress: ["SAP Business AI suite", "Joule AI copilot", "AI in S/4HANA Cloud & SuccessFactors", "Business Technology Platform (BTP) for AI", "Industry-specific AI use cases"],
+                monteCarlo: { current: 180, bear: 165, base: 195, bull: 220 }
+            },
+            {
+                rank: 16, name: "TAIWAN SEMICONDUCTOR MFG CO LTD", ticker: "TSM", ALIAS: "2330.TW", weight: "2.29%", marketValue: "$557,498", category: "semiconductor",
+                oneLiner: "The world's largest semiconductor foundry, critical for manufacturing advanced AI chips for leading designers.",
+                financials: { revenue: "$75.9B", growth: "+5%", netIncome: "$30.1B" },
+                growthHighlight: "Strong demand for 3nm and 5nm nodes driven by AI accelerators. CoWoS advanced packaging capacity booked solid.",
+                aiProgress: ["Leading-edge nodes (N3, N2)", "CoWoS & SoIC advanced packaging", "Manufacturing for major AI chip designers", "R&D in next-gen process tech", "Key enabler of AI hardware"],
+                monteCarlo: { current: 150, bear: 135, base: 165, bull: 190 }
+            },
+            {
+                rank: 17, name: "ADOBE INC", ticker: "ADBE", weight: "2.24%", marketValue: "$545,082", category: "enterprise-software",
+                oneLiner: "Creative and digital experience software leader, infusing generative AI (Firefly) across its flagship products.",
+                financials: { revenue: "$20.1B", growth: "+11%", netIncome: "$5.8B" },
+                growthHighlight: "Firefly adoption driving Creative Cloud engagement. GenStudio for enterprise content supply chain gaining traction.",
+                aiProgress: ["Adobe Firefly generative AI models", "Adobe Sensei AI framework", "Generative Fill in Photoshop", "Text to Vector in Illustrator", "AI in Experience Cloud personalization"],
+                monteCarlo: { current: 480, bear: 440, base: 510, bull: 570 }
+            },
+            {
+                rank: 18, name: "TEMPUS AI INC", ticker: "TEM", weight: "2.16%", marketValue: "$525,692", category: "healthcare-ai",
+                oneLiner: "Precision medicine company leveraging AI and a vast library of clinical/molecular data to improve cancer care and drug discovery.",
+                financials: { revenue: "$600M", growth: "+35%", netIncome: "-$250M" },
+                growthHighlight: "Expanding de-identified database and AI model capabilities. Growing partnerships with pharmaceutical companies for R&D.",
+                aiProgress: ["AI-driven genomic profiling", "AI for therapeutic selection", "Drug discovery AI platform", "Clinical trial optimization tools", "Real-world evidence generation"],
+                monteCarlo: { current: 15, bear: 12, base: 18, bull: 25 }
+            },
+            {
+                rank: 19, name: "ORACLE CORP", ticker: "ORCL", weight: "2.09%", marketValue: "$507,994", category: "cloud",
+                oneLiner: "Enterprise software and cloud infrastructure provider (OCI) rapidly expanding its AI capabilities for model training and enterprise apps.",
+                financials: { revenue: "$52.3B", growth: "+8%", netIncome: "$10.5B" },
+                growthHighlight: "OCI revenue growth accelerating, driven by large AI training contracts. Partnership with Cohere for generative AI services.",
+                aiProgress: ["OCI Generative AI Service", "OCI Superclusters with NVIDIA GPUs", "Oracle Database 23ai (Vector Search)", "AI in Fusion & NetSuite apps", "Partnership with Cohere"],
+                monteCarlo: { current: 125, bear: 110, base: 135, bull: 155 }
+            },
+            {
+                rank: 20, name: "ELASTIC NV", ticker: "ESTC", weight: "2.08%", marketValue: "$505,161", category: "data-analytics",
+                oneLiner: "Provider of search and analytics solutions, enabling AI-powered insights and observability with the Elastic Stack.",
+                financials: { revenue: "$1.2B", growth: "+20%", netIncome: "$50M" },
+                growthHighlight: "Elasticsearch Relevance Engine (ESRE) enhancing AI search. Strong adoption of vector search for generative AI.",
+                aiProgress: ["Elasticsearch Relevance Engine (ESRE)", "Vector search capabilities", "AI Assistant for Kibana", "Security analytics with ML", "Observability with AIOps"],
+                monteCarlo: { current: 100, bear: 85, base: 110, bull: 130 }
+            },
+            {
+                rank: 21, name: "CLOUDFLARE INC - CLASS A", ticker: "NET", weight: "2.04%", marketValue: "$496,088", category: "cloud",
+                oneLiner: "Global cloud network and security provider, offering serverless compute (Workers AI) for AI inference at the edge.",
+                financials: { revenue: "$1.5B", growth: "+30%", netIncome: "-$150M" },
+                growthHighlight: "Workers AI platform gaining traction for edge inference. Strong growth in enterprise security solutions with AI capabilities.",
+                aiProgress: ["Cloudflare Workers AI (Edge Inference)", "AI for WAF & Bot Management", "Zero Trust security with AI insights", "Data Localization Suite", "Observability & analytics for AI apps"],
+                monteCarlo: { current: 80, bear: 70, base: 90, bull: 110 }
+            },
+            {
+                rank: 22, name: "SNOWFLAKE INC-CLASS A", ticker: "SNOW", weight: "2.03%", marketValue: "$493,523", category: "data-analytics",
+                oneLiner: "The Data Cloud company enabling AI and ML workloads with its scalable platform, Snowpark, and native AI features.",
+                financials: { revenue: "$3.1B", growth: "+35%", netIncome: "-$700M" },
+                growthHighlight: "Snowpark adoption for Python and ML growing rapidly. Native LLM functions and Cortex AI simplifying AI development.",
+                aiProgress: ["Snowpark for Python & ML", "Cortex AI (Managed LLM functions)", "Document AI & Universal Search", "Streamlit for AI app development", "Partnerships with AI/ML platforms"],
+                monteCarlo: { current: 160, bear: 140, base: 175, bull: 210 }
+            },
+            {
+                rank: 23, name: "SAMSARA INC-CL A", ticker: "IOT", weight: "2.01%", marketValue: "$489,080", category: "cloud",
+                oneLiner: "Connected operations cloud provider, leveraging AI and IoT data to improve safety, efficiency, and sustainability for physical operations.",
+                financials: { revenue: "$950M", growth: "+40%", netIncome: "-$200M" },
+                growthHighlight: "AI-powered safety features (driver coaching, incident detection) driving customer adoption. Expanding data platform for new AI insights.",
+                aiProgress: ["AI Dash Cams & Driver Safety", "AI for asset tracking & utilization", "Predictive maintenance with AI", "AI-powered dispatch & routing", "Sustainability insights from IoT data"],
+                monteCarlo: { current: 35, bear: 30, base: 38, bull: 45 }
+            },
+            {
+                rank: 24, name: "ROBLOX CORP -CLASS A", ticker: "RBLX", weight: "1.90%", marketValue: "$462,054", category: "consumer-tech",
+                oneLiner: "Online entertainment platform empowering creators with AI tools to build immersive 3D experiences and a vision for the metaverse.",
+                financials: { revenue: "$3.0B", growth: "+25%", netIncome: "-$1.0B" },
+                growthHighlight: "AI tools for creators (code assist, texture generation) improving development speed. Exploring generative AI for in-game content.",
+                aiProgress: ["AI-powered content creation tools", "Generative AI for avatar & asset creation", "AI for content moderation & safety", "Personalized experience discovery", "Roblox Assistant (AI chatbot)"],
+                monteCarlo: { current: 40, bear: 32, base: 45, bull: 55 }
+            },
+            {
+                rank: 25, name: "DATADOG INC - CLASS A", ticker: "DDOG", weight: "1.70%", marketValue: "$412,857", category: "cloud",
+                oneLiner: "Observability and security platform for cloud applications, integrating AI (Bits AI) for faster troubleshooting and insights.",
+                financials: { revenue: "$2.3B", growth: "+28%", netIncome: "$100M" },
+                growthHighlight: "Bits AI copilot enhancing user productivity. Strong demand for security monitoring and AIOps capabilities.",
+                aiProgress: ["Bits AI (Observability Copilot)", "AI for anomaly detection & root cause analysis", "Log pattern analysis with ML", "Watchdog AI for proactive alerts", "Security incident correlation with AI"],
+                monteCarlo: { current: 120, bear: 105, base: 130, bull: 150 }
+            },
+            {
+                rank: 26, name: "SHOPIFY INC - CLASS A", ticker: "SHOP", weight: "1.63%", marketValue: "$396,354", category: "cloud",
+                oneLiner: "E-commerce platform empowering merchants with AI tools (Shopify Magic) for store creation, marketing, and operations.",
+                financials: { revenue: "$7.5B", growth: "+25%", netIncome: "$300M" },
+                growthHighlight: "Shopify Magic AI suite driving merchant adoption. AI-powered product recommendations and marketing automation enhancing GMV.",
+                aiProgress: ["Shopify Magic (AI content generation)", "AI for product descriptions & images", "Sidekick AI assistant for merchants", "AI-powered fraud detection", "Personalized shopping experiences"],
+                monteCarlo: { current: 65, bear: 55, base: 72, bull: 85 }
+            },
+            {
+                rank: 27, name: "SK HYNIX INC", ticker: "000660.KS", ALIAS: "000660", weight: "1.63%", marketValue: "$395,988", category: "semiconductor",
+                oneLiner: "Leading memory semiconductor supplier, crucial for AI with its High Bandwidth Memory (HBM) used in AI accelerators.",
+                financials: { revenue: "$35.0B (Est.)", growth: "+15% (Est.)", netIncome: "$5.0B (Est.)" },
+                growthHighlight: "Strong demand for HBM3 and HBM3E for AI GPUs. Expanding HBM production capacity to meet AI boom.",
+                aiProgress: ["High Bandwidth Memory (HBM3, HBM3E)", "Next-gen memory for AI (LPCAMM, CXL)", "Advanced packaging for memory solutions", "R&D in processing-in-memory (PIM)", "Key supplier to NVIDIA, AMD"],
+                monteCarlo: { current: 150000, bear: 130000, base: 165000, bull: 190000 } // KRW
+            },
+            {
+                rank: 28, name: "APPLOVIN CORP-CLASS A", ticker: "APP", weight: "1.61%", marketValue: "$390,428", category: "digital-media",
+                oneLiner: "Mobile technology company providing app developers with AI-driven marketing, monetization, and analytics tools.",
+                financials: { revenue: "$3.5B", growth: "+18%", netIncome: "$400M" },
+                growthHighlight: "AXON 2.0 AI advertising engine driving higher ROI for marketers. Expanding AI capabilities for game developers.",
+                aiProgress: ["AXON AI advertising engine", "AI for ad campaign optimization", "App discovery & recommendation AI", "MAX in-app bidding platform with AI", "AI tools for game development"],
+                monteCarlo: { current: 80, bear: 70, base: 88, bull: 105 }
+            },
+            {
+                rank: 29, name: "WORKDAY INC-CLASS A", ticker: "WDAY", weight: "1.50%", marketValue: "$365,345", category: "cloud",
+                oneLiner: "Enterprise cloud platform for finance and HR, embedding AI and ML to automate tasks and provide intelligent insights.",
+                financials: { revenue: "$7.5B", growth: "+18%", netIncome: "$1.3B" },
+                growthHighlight: "AI/ML features in Workday platform driving customer value. Expanding use of generative AI for talent management and financial planning.",
+                aiProgress: ["Workday AI (Embedded ML)", "Skills Cloud with AI matching", "Generative AI for job descriptions & content", "AI-powered financial forecasting", "Anomaly detection in HR/Finance data"],
+                monteCarlo: { current: 230, bear: 200, base: 250, bull: 280 }
+            },
+            {
+                rank: 30, name: "ATLASSIAN CORP-CL A", ticker: "TEAM", weight: "1.50%", marketValue: "$364,210", category: "enterprise-software",
+                oneLiner: "Provider of team collaboration and productivity software (Jira, Confluence), integrating AI (Atlassian Intelligence) to enhance workflows.",
+                financials: { revenue: "$4.0B", growth: "+22%", netIncome: "$300M" },
+                growthHighlight: "Atlassian Intelligence features (summarization, Q&A) driving user engagement. AI enhancing project management and developer tools.",
+                aiProgress: ["Atlassian Intelligence suite", "AI-powered search & summarization", "Virtual teammate capabilities", "AI for code review & suggestions (Jira)", "Generative AI in Confluence editing"],
+                monteCarlo: { current: 160, bear: 140, base: 175, bull: 200 }
+            },
+            {
+                rank: 31, name: "PALO ALTO NETWORKS INC", ticker: "PANW", weight: "1.36%", marketValue: "$329,801", category: "cybersecurity",
+                oneLiner: "Global cybersecurity leader leveraging AI and ML to power its next-generation security platform for threat prevention.",
+                financials: { revenue: "$7.8B", growth: "+20%", netIncome: "$1.2B" },
+                growthHighlight: "AI-driven security operations (XSIAM) gaining traction. Strong demand for cloud security (Prisma Cloud) with AI capabilities.",
+                aiProgress: ["Cortex XSIAM (AI Security Operations)", "AI/ML for threat detection & prevention", "Prisma Cloud with AI security", "Strata NGFW with AI-powered security", "Unit 42 AI-driven threat research"],
+                monteCarlo: { current: 300, bear: 270, base: 320, bull: 360 }
+            },
+            {
+                rank: 32, name: "GITLAB INC-CL A", ticker: "GTLB", weight: "1.35%", marketValue: "$327,608", category: "enterprise-software",
+                oneLiner: "The DevSecOps platform integrating AI (GitLab Duo) throughout the software development lifecycle to boost developer productivity.",
+                financials: { revenue: "$650M", growth: "+35%", netIncome: "-$150M" },
+                growthHighlight: "GitLab Duo AI features (code suggestions, vulnerability explanation) driving adoption of higher tiers. Focus on AI-assisted DevSecOps.",
+                aiProgress: ["GitLab Duo (AI Code Suggestions, Chat)", "AI-powered vulnerability detection", "AI for test generation & optimization", "AI in issue tracking & planning", "Value Stream Analytics with AI insights"],
+                monteCarlo: { current: 50, bear: 42, base: 55, bull: 65 }
+            },
+            {
+                rank: 33, name: "MONGODB INC", ticker: "MDB", weight: "1.32%", marketValue: "$320,220", category: "data-analytics",
+                oneLiner: "Developer data platform providing a modern database (MongoDB Atlas) with integrated vector search for AI applications.",
+                financials: { revenue: "$1.8B", growth: "+30%", netIncome: "-$200M" },
+                growthHighlight: "MongoDB Atlas vector search adoption growing rapidly for generative AI use cases. Strong developer mindshare.",
+                aiProgress: ["MongoDB Atlas Vector Search", "Relational Migrator with AI assist", "Atlas Search with semantic capabilities", "Integration with AI/ML frameworks", "Developer tools for AI app building"],
+                monteCarlo: { current: 250, bear: 210, base: 270, bull: 310 }
+            },
+            {
+                rank: 34, name: "ASML HOLDING NV", ticker: "ASML", weight: "1.32%", marketValue: "$320,032", category: "semiconductor",
+                oneLiner: "Key supplier of lithography systems used in the manufacturing of advanced semiconductors, crucial for AI chip production.",
+                financials: { revenue: "$29.5B", growth: "+10%", netIncome: "$8.1B" },
+                growthHighlight: "High-NA EUV systems critical for next-gen AI chips. Strong order backlog from leading foundries.",
+                aiProgress: ["EUV & DUV lithography systems", "High-NA EUV technology", "Metrology & inspection systems", "Enabling advanced semiconductor nodes", "Crucial for AI hardware roadmap"],
+                monteCarlo: { current: 950, bear: 850, base: 1020, bull: 1150 }
+            },
+            {
+                rank: 35, name: "PURE STORAGE INC -CL A", ticker: "PSTG", weight: "1.30%", marketValue: "$315,010", category: "hardware",
+                oneLiner: "Enterprise data storage solutions provider, offering high-performance flash storage optimized for AI and modern data workloads.",
+                financials: { revenue: "$3.0B", growth: "+15%", netIncome: "$200M" },
+                growthHighlight: "FlashBlade and FlashArray//X series seeing strong demand for AI/ML workloads. Evergreen subscription model driving recurring revenue.",
+                aiProgress: ["Storage for AI/ML & HPC", "FlashBlade for unstructured data", "AIRI (AI-Ready Infrastructure) with NVIDIA", "Pure1 AI-driven storage management", "Data services for modern applications"],
+                monteCarlo: { current: 60, bear: 52, base: 68, bull: 80 }
+            },
+            {
+                rank: 36, name: "VERTIV HOLDINGS CO -CL A", ticker: "VRT", weight: "1.27%", marketValue: "$308,879", category: "hardware",
+                oneLiner: "Provider of critical digital infrastructure and continuity solutions, essential for powering AI data centers.",
+                financials: { revenue: "$7.2B", growth: "+12%", netIncome: "$500M" },
+                growthHighlight: "Strong demand for liquid cooling and power management solutions for AI data centers. Growing backlog from hyperscalers.",
+                aiProgress: ["Liquid cooling solutions for GPUs", "High-density power distribution", "UPS & thermal management for data centers", "Modular data center solutions", "Services for critical infrastructure"],
+                monteCarlo: { current: 90, bear: 80, base: 100, bull: 115 }
+            },
+            {
+                rank: 37, name: "MARVELL TECHNOLOGY INC", ticker: "MRVL", weight: "1.24%", marketValue: "$301,265", category: "semiconductor",
+                oneLiner: "Provider of data infrastructure semiconductor solutions, including custom ASICs and networking chips for AI data centers.",
+                financials: { revenue: "$6.0B", growth: "+8%", netIncome: "$400M" },
+                growthHighlight: "Custom AI silicon and electro-optics for AI data centers driving growth. Expanding portfolio for AI networking.",
+                aiProgress: ["Custom ASICs for AI/ML", "Optical PAM4 DSPs for AI interconnect", "Data Processing Units (DPUs)", "Ethernet switches & PHYs for AI", "Storage controllers for data centers"],
+                monteCarlo: { current: 75, bear: 65, base: 82, bull: 95 }
+            },
+            {
+                rank: 38, name: "ZSCALER INC", ticker: "ZS", weight: "1.22%", marketValue: "$297,043", category: "cybersecurity",
+                oneLiner: "Cloud-native security platform (Zero Trust Exchange) leveraging AI to protect enterprise users, apps, and data.",
+                financials: { revenue: "$2.0B", growth: "+40%", netIncome: "-$100M" },
+                growthHighlight: "Zero Trust Exchange adoption growing rapidly. AI/ML enhancing threat detection and data protection capabilities.",
+                aiProgress: ["AI-powered threat detection", "Zero Trust Network Access (ZTNA)", "Cloud Access Security Broker (CASB)", "Data Loss Prevention (DLP) with AI", "AI for user & entity behavior analytics (UEBA)"],
+                monteCarlo: { current: 180, bear: 160, base: 195, bull: 225 }
+            },
+            {
+                rank: 39, name: "ARISTA NETWORKS INC", ticker: "ANET", weight: "1.10%", marketValue: "$268,584", category: "networking",
+                oneLiner: "High-performance cloud networking solutions provider, critical for building scalable and efficient AI data center fabrics.",
+                financials: { revenue: "$5.5B", growth: "+25%", netIncome: "$1.8B" },
+                growthHighlight: "Strong demand for high-speed Ethernet switches (400G/800G) for AI clusters. Expanding footprint in enterprise and cloud.",
+                aiProgress: ["High-speed Ethernet switches for AI", "EOS (Extensible Operating System)", "CloudVision for network automation", "AI-driven network telemetry & analytics", "Solutions for AI/ML fabrics"],
+                monteCarlo: { current: 280, bear: 250, base: 300, bull: 340 }
+            },
+            {
+                rank: 40, name: "CONFLUENT INC-CLASS A", ticker: "CFLT", weight: "1.10%", marketValue: "$266,754", category: "data-analytics",
+                oneLiner: "Data streaming platform (Apache Kafka) enabling real-time data pipelines for AI/ML applications and analytics.",
+                financials: { revenue: "$850M", growth: "+30%", netIncome: "-$300M" },
+                growthHighlight: "Confluent Cloud adoption growing. Data streaming critical for feeding real-time data to AI models.",
+                aiProgress: ["Managed Apache Kafka service", "Stream processing with Flink SQL", "Data governance for streaming data", "Connectors for AI/ML platforms", "Real-time data for generative AI"],
+                monteCarlo: { current: 30, bear: 25, base: 33, bull: 40 }
+            },
+            {
+                rank: 41, name: "MEDIATEK INC", ticker: "2454.TW", ALIAS: "2454", weight: "1.08%", marketValue: "$262,952", category: "semiconductor",
+                oneLiner: "Fabless semiconductor company designing chips for smartphones, smart devices, and increasingly, AI edge computing.",
+                financials: { revenue: "$15.0B (Est.)", growth: "+10% (Est.)", netIncome: "$2.5B (Est.)" },
+                growthHighlight: "Dimensity SoCs with powerful AI processing units (APUs). Expanding into automotive and custom AI ASICs.",
+                aiProgress: ["Dimensity mobile SoCs with APUs", "AI for image & video processing", "Edge AI silicon solutions", "Automotive AI platforms", "IoT chips with AI capabilities"],
+                monteCarlo: { current: 1200, bear: 1050, base: 1300, bull: 1500 } // TWD
+            },
+            {
+                rank: 42, name: "MICRON TECHNOLOGY INC", ticker: "MU", weight: "1.06%", marketValue: "$257,701", category: "semiconductor",
+                oneLiner: "Provider of memory and storage solutions (DRAM, NAND), including HBM for AI accelerators and SSDs for AI data centers.",
+                financials: { revenue: "$20.0B (Est.)", growth: "Cyclical recovery", netIncome: "$1.0B (Est.)" },
+                growthHighlight: "Ramping HBM3E production for AI demand. Strong outlook for AI server DRAM and data center SSDs.",
+                aiProgress: ["HBM3E for AI accelerators", "High-capacity DDR5 for AI servers", "Data center SSDs with high IOPS", "CXL memory expansion modules", "Next-gen memory R&D for AI"],
+                monteCarlo: { current: 130, bear: 110, base: 145, bull: 170 }
+            },
+            {
+                rank: 43, name: "SYNOPSYS INC", ticker: "SNPS", weight: "0.95%", marketValue: "$230,469", category: "semiconductor",
+                oneLiner: "Leader in EDA software and semiconductor IP, enabling the design of complex AI chips with its AI-driven design tools.",
+                financials: { revenue: "$6.2B", growth: "+15%", netIncome: "$1.5B" },
+                growthHighlight: "Synopsys.ai EDA suite accelerating chip design. Strong demand for IP for AI and HPC applications.",
+                aiProgress: ["Synopsys.ai (AI-driven EDA tools)", "DSO.ai (Design Space Optimization AI)", "Semiconductor IP for AI SoCs", "Verification & validation tools for AI chips", "Software integrity for AI applications"],
+                monteCarlo: { current: 580, bear: 520, base: 610, bull: 680 }
+            },
+            {
+                rank: 44, name: "QUALCOMM INC", ticker: "QCOM", weight: "0.94%", marketValue: "$229,555", category: "semiconductor",
+                oneLiner: "Wireless technology leader, providing Snapdragon processors with powerful AI engines for mobile, automotive, and edge AI.",
+                financials: { revenue: "$38.5B", growth: "+5%", netIncome: "$9.0B" },
+                growthHighlight: "Snapdragon X Elite for AI PCs. Expanding AI capabilities in automotive and IoT platforms.",
+                aiProgress: ["Snapdragon mobile platforms with AI Engine", "AI for on-device processing", "Snapdragon Ride for automotive AI", "AI for XR (AR/VR) devices", "5G and AI convergence"],
+                monteCarlo: { current: 210, bear: 190, base: 225, bull: 250 }
+            },
+            {
+                rank: 45, name: "ARM HOLDINGS PLC-ADR", ticker: "ARM", weight: "0.85%", marketValue: "$207,431", category: "semiconductor",
+                oneLiner: "Leading semiconductor IP provider whose energy-efficient architecture is crucial for mobile, IoT, and increasingly, AI edge and data center SoCs.",
+                financials: { revenue: "$3.5B", growth: "+20%", netIncome: "$700M" },
+                growthHighlight: "Armv9 architecture adoption for AI workloads. Expanding into data center and automotive AI with Neoverse and KleidiAI.",
+                aiProgress: ["Arm Neoverse (Data Center CPUs)", "Arm KleidiAI (AI Software Libraries)", "Ethos NPUs for edge AI", "CSS for custom AI silicon", "Energy-efficient architecture for AI"],
+                monteCarlo: { current: 120, bear: 100, base: 130, bull: 150 }
+            }
+        ];
+
+        // Function to calculate and display portfolio overview statistics
+        function calculatePortfolioOverview() {
+            let totalMarketValueSum = 0;
+            let top10WeightSum = 0;
+            const numActualHoldings = allHoldings.length; 
+
+            allHoldings.forEach((holding, index) => {
+                // Sum up market values
+                if (holding.marketValue) {
+                    const numericMarketValue = parseFloat(holding.marketValue.replace(/[^0-9.-]+/g,""));
+                    if (!isNaN(numericMarketValue)) {
+                        totalMarketValueSum += numericMarketValue;
+                    }
+                }
+                // Sum up weights for top 10 holdings
+                if (parseInt(holding.rank) <= 10 && holding.weight) { 
+                    const numericWeight = parseFloat(holding.weight.replace('%',''));
+                    if(!isNaN(numericWeight)) {
+                        top10WeightSum += numericWeight;
+                    }
+                }
+            });
+            
+            // Update the DOM with calculated values
+            document.getElementById('totalHoldings').textContent = numActualHoldings;
+            document.getElementById('totalAssets').textContent = `$${(totalMarketValueSum / 1000000).toFixed(1)}M`;
+            
+            if (allHoldings.length > 0) {
+                document.getElementById('topHoldingWeight').textContent = allHoldings[0].weight;
+            }
+            document.getElementById('top10Concentration').textContent = `${top10WeightSum.toFixed(2)}%`;
+        }
+
+        // Function to create the HTML structure for a single holding card
+        function createHoldingCard(holding) {
+            let upsidePercentage = 0;
+            // Calculate upside percentage based on Monte Carlo simulation data
+            if (holding.monteCarlo && typeof holding.monteCarlo.current === 'number' && typeof holding.monteCarlo.base === 'number' && holding.monteCarlo.current !== 0) {
+                upsidePercentage = ((holding.monteCarlo.base - holding.monteCarlo.current) / holding.monteCarlo.current * 100);
+            }
+            const upsideText = `${upsidePercentage.toFixed(1)}%`;
+            const upsideClass = upsidePercentage >= 0 ? 'bull-case' : 'bear-case';
+
+            // Determine the display ticker, considering private companies and aliases
+            let displayTicker = holding.ticker;
+             if (holding.ticker === "Private" && holding.ALIAS) {
+                displayTicker = holding.ALIAS; // Show ALIAS if company is Private and ALIAS exists
+            } else if (holding.ALIAS && holding.ticker !== holding.ALIAS) { 
+                displayTicker = `${holding.ticker} (${holding.ALIAS})`; // Show Ticker (ALIAS) if ALIAS exists and is different
+            }
+
+
+            // Return the HTML string for the card
+            return `
+                <div class="holding-card" data-category="${holding.category}" data-rank="${holding.rank}">
+                    <div class="rank-badge">${holding.rank}</div>
+                    <div class="company-header">
+                        <div class="company-info">
+                            <div class="company-name">${holding.name}</div>
+                            <div class="company-ticker">${displayTicker}</div>
+                        </div>
+                        <div class="weight-info">
+                            <div class="weight">${holding.weight}</div>
+                            <div class="market-value">${holding.marketValue}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="one-liner">${holding.oneLiner}</div>
+                    
+                    <div class="section">
+                        <div class="section-title">Financial Performance</div>
+                        <div class="financial-grid">
+                            <div class="metric">
+                                <div class="metric-value">${holding.financials.revenue}</div>
+                                <div class="metric-label">Revenue</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">${holding.financials.growth}</div>
+                                <div class="metric-label">Growth (YoY)</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">${holding.financials.netIncome}</div>
+                                <div class="metric-label">Net Income</div>
+                            </div>
+                        </div>
+                        <div class="growth-highlight">
+                            <strong>Growth Driver:</strong> ${holding.growthHighlight}
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">AI Products & Progress</div>
+                        <ul class="ai-features">
+                            ${holding.aiProgress.map(feature => `<li>${feature}</li>`).join('')}
+                        </ul>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">Analyst Outlook & Price Targets</div>
+                        <div class="monte-carlo">
+                            <div class="price-range">
+                                <div class="price-target bear-case">
+                                    <div>Bear Case</div>
+                                    <div><strong>$${holding.monteCarlo.bear}</strong></div>
+                                    </div>
+                                <div class="price-target base-case-text"> <div>Base Case</div>
+                                    <div><strong>$${holding.monteCarlo.base}</strong></div>
+                                </div>
+                                <div class="price-target bull-case">
+                                    <div>Bull Case</div>
+                                    <div><strong>$${holding.monteCarlo.bull}</strong></div>
+                                </div>
+                            </div>
+                            <div style="text-align: center; margin-top: 10px; margin-bottom: 15px;">
+                                <span class="current-price-text">Current: $${holding.monteCarlo.current}</span> | <span>Est. Upside (Base): </span>
+                                <strong class="${upsideClass}">${upsideText}</strong>
+                            </div>
+                            <div class="chart-container">
+                                 <canvas id="chart-${holding.ticker.replace(/[.\s]/g,'_')}-${holding.rank}" class="monte-carlo-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Function to render holdings based on the selected filter
+        function renderHoldings(filter = 'all') {
+            const container = document.getElementById('holdingsContainer');
+            container.innerHTML = ''; // Clear existing cards
+            
+            let filteredData = allHoldings;
+
+            // Apply filter
+            if (filter === 'top10') {
+                filteredData = allHoldings.filter(h => parseInt(h.rank) <= 10).sort((a,b) => parseInt(a.rank) - parseInt(b.rank));
+            } else if (filter === 'ai-pure') { 
+                filteredData = allHoldings.filter(h => h.category === 'ai-pure').sort((a,b) => parseInt(a.rank) - parseInt(b.rank));
+            } else { // 'all'
+                filteredData = allHoldings.sort((a,b) => parseInt(a.rank) - parseInt(b.rank));
+            }
+
+            // Create and append cards for filtered data
+            filteredData.forEach(holding => {
+                container.innerHTML += createHoldingCard(holding);
+            });
+            renderCharts(); // Re-render charts for the new set of cards
+        }
+
+        // Function to handle filter button clicks
+        function filterHoldings(event, category) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(button => button.classList.remove('active')); // Deactivate all buttons
+            if (event && event.target) {
+                 event.target.classList.add('active'); // Activate clicked button
+            } else { 
+                // Activate button programmatically if no event (e.g., on initial load)
+                const activeButton = Array.from(buttons).find(btn => btn.getAttribute('onclick').includes(`'${category}'`));
+                if (activeButton) activeButton.classList.add('active');
+            }
+            renderHoldings(category); // Render holdings with the new filter
+        }
+        
+        let charts = []; // Array to store Chart.js instances
+
+        // Function to render all Monte Carlo charts
+        function renderCharts() {
+            charts.forEach(chart => chart.destroy()); // Destroy existing charts before re-rendering
+            charts = [];
+
+            const chartCanvases = document.querySelectorAll('.monte-carlo-chart');
+            chartCanvases.forEach(canvas => {
+                const canvasId = canvas.id; 
+                // Extract ticker and rank from canvas ID to find the corresponding holding data
+                const parts = canvasId.split('-');
+                const rank = parseInt(parts[parts.length -1]); 
+                // Reconstruct ticker, replacing underscores (used for valid ID) back to original characters like '.'
+                const tickerForSearch = parts.slice(1, parts.length - 1).join('-').replace(/_/g, '.');
+
+
+                // Find the holding data that matches the chart's ticker and rank
+                const holding = allHoldings.find(h => {
+                    const normalizedHoldingTicker = h.ticker.replace(/\s/g, '').toUpperCase();
+                    const normalizedSearchTicker = tickerForSearch.replace(/\s/g, '').toUpperCase();
+                    
+                    // Check if ALIAS matches, for cases like private companies or alternative ticker symbols
+                    let aliasMatch = false;
+                    if (h.ALIAS) {
+                        const normalizedAlias = h.ALIAS.replace(/\s/g, '').toUpperCase();
+                        aliasMatch = normalizedAlias === normalizedSearchTicker;
+                    }
+
+                    return parseInt(h.rank) === rank && 
+                           (normalizedHoldingTicker === normalizedSearchTicker || 
+                            aliasMatch ||
+                            (h.ticker === "Private" && normalizedSearchTicker === "PRIVATE")); // Special case for "Private" ticker
+                });
+
+
+                if (holding && holding.monteCarlo) {
+                    try {
+                        const chartInstance = new Chart(canvas, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Bear', 'Current', 'Base', 'Bull'],
+                                datasets: [{
+                                    label: 'Price Targets',
+                                    data: [
+                                        holding.monteCarlo.bear,
+                                        holding.monteCarlo.current,
+                                        holding.monteCarlo.base,
+                                        holding.monteCarlo.bull
+                                    ],
+                                    backgroundColor: [
+                                        'rgba(244, 67, 54, 0.7)',   // Bear case - Red
+                                        'rgba(33, 150, 243, 0.7)', // Current price - Blue
+                                        'rgba(255, 193, 7, 0.7)',   // Base case - Yellow
+                                        'rgba(76, 175, 80, 0.7)'    // Bull case - Green
+                                    ],
+                                    borderColor: [
+                                        'rgba(244, 67, 54, 1)',
+                                        'rgba(33, 150, 243, 1)',
+                                        'rgba(255, 193, 7, 1)',
+                                        'rgba(76, 175, 80, 1)'
+                                    ],
+                                    borderWidth: 1,
+                                    borderRadius: 5,
+                                    barPercentage: 0.8,
+                                    categoryPercentage: 0.7
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    y: {
+                                        beginAtZero: false, 
+                                        ticks: { color: 'rgba(255,255,255,0.7)', font: { size: 10 } },
+                                        grid: { color: 'rgba(255,255,255,0.1)' }
+                                    },
+                                    x: {
+                                        ticks: { color: 'rgba(255,255,255,0.7)', font: { size: 10 } },
+                                        grid: { display: false }
+                                    }
+                                },
+                                plugins: {
+                                    legend: { display: false },
+                                    tooltip: {
+                                        enabled: true,
+                                        backgroundColor: 'rgba(0,0,0,0.7)',
+                                        titleFont: { size: 12 },
+                                        bodyFont: { size: 11 },
+                                        callbacks: {
+                                            label: function(context) {
+                                                return `$${context.formattedValue}`;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                        charts.push(chartInstance); // Store the new chart instance
+                    } catch (e) {
+                        console.error("Error creating chart for:", holding.name, e);
+                    }
+                } else if (!holding) {
+                    // This warning can be helpful for debugging if charts aren't appearing as expected
+                    // console.warn("Holding not found for chart ID:", canvasId, "Ticker searched:", tickerForSearch, "Rank:", rank);
+                }
+            });
+        }
+
+        // Initial setup when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            calculatePortfolioOverview(); // Calculate and display overview stats
+            filterHoldings(null, 'all'); // Render all holdings by default
+        });
+    </script>
+</body>
+</html>
